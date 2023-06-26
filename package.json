@@ -15,55 +15,104 @@
     "vscode": "^1.74.0"
   },
   "categories": [
+    "Formatters",
+    "Language Packs",
     "Programming Languages",
     "Extension Packs",
     "Other"
-  ],
-  "keywords": [
-    "code",
-    "management"
   ],
   "capabilities": {
     "virtualWorkspaces": true
   },
   "activationEvents": [],
+  "files": [
+    "dist/",
+    "media/",
+    "images/",
+    "snippets/",
+    "resources/",
+    "extension.js",
+    "extension.css",
+    "*.md"
+  ],
   "main": "./dist/extension.js",
+  "keywords": [
+    "code",
+    "management"
+  ],
   "contributes": {
     "commands": [
       {
-        "command": "utocode.helloWorld",
+        "command": "codesuite.transformTo",
+        "title": "Transform to",
+        "category": "codesuite"
+      },
+      {
+        "command": "codesuite.transformToCamelcase",
+        "title": "Transform To Camelcase",
+        "category": "codesuite"
+      },
+      {
+        "command": "codesuite.transformToSnakecase",
+        "title": "Transform To Snakecase",
+        "category": "codesuite"
+      },
+      {
+        "command": "codesuite.transformToJavaCase",
+        "title": "Transform To JavaCase",
+        "category": "codesuite"
+      },
+      {
+        "command": "codesuite.transformToJavaCaseSmart",
+        "title": "Transform To JavaCase",
+        "category": "codesuite"
+      },
+      {
+        "command": "codesuite.helloWorld",
         "title": "Hello World",
         "category": "codesuite"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "codesuite.transformTo",
+        "key": "alt+f1",
+        "mac": "option+f1",
+        "when": "editorTextFocus"
       }
     ]
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
+    "webpack": "webpack",
     "compile": "webpack",
     "watch": "webpack --watch",
+    "compile0": "tsc -p ./",
+    "watch0": "tsc -watch -p ./",
     "package": "webpack --mode production --devtool hidden-source-map",
     "compile-tests": "tsc -p . --outDir out",
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
+    "test": "node ./dist/test/runTest.js"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
     "@types/lodash": "^4.14.195",
     "@types/mocha": "^10.0.1",
-    "@types/node": "^20.3.1",
+    "@types/node": "16.x",
     "@types/vscode": "^1.74.0",
     "@typescript-eslint/eslint-plugin": "^5.59.1",
     "@typescript-eslint/parser": "^5.59.1",
+    "@vscode/test-electron": "^2.3.0",
     "eslint": "^8.39.0",
     "glob": "^8.1.0",
     "mocha": "^10.2.0",
+    "ts-loader": "^9.4.3",
     "typescript": "^5.0.4",
-    "ts-loader": "^9.4.2",
-    "webpack": "^5.81.0",
+    "webpack": "^5.88.0",
     "webpack-cli": "^5.0.2",
-    "@vscode/test-electron": "^2.3.0"
+    "webpack-dev-server": "^4.15.1"
   },
   "dependencies": {
     "html-entities": "^2.3.6",
