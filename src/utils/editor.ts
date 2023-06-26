@@ -38,10 +38,22 @@ export async function printEditorReplace(output: string) {
 
     const editor = vscode.window.activeTextEditor;
     if (editor) {
-        const currentPosition = editor.selection.start;
-        editor.edit((editBuilder) => {
-            editBuilder.replace(currentPosition, output);
-        });
+        const start = editor.selection.start;
+        const end = editor.selection.end;
+        if (start.compareTo(end) === 0) {
+            const startPos = new vscode.Position(0, 0); // Assuming line 0, column 0
+            const endPos = editor.document.lineAt(editor.document.lineCount - 1).range.end;
+            const selectionRange = new vscode.Range(startPos, endPos);
+
+            editor.selection = new vscode.Selection(selectionRange.start, selectionRange.end);
+            editor.edit((editBuilder) => {
+                editBuilder.replace(editor.selection, output);
+            });
+        } else {
+            editor.edit((editBuilder) => {
+                editBuilder.replace(start, output);
+            });
+        }
     } else {
         vscode.window.showErrorMessage("There is not editor");
     }

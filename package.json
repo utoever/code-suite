@@ -26,7 +26,7 @@
   },
   "activationEvents": [],
   "files": [
-    "dist/",
+    "out/",
     "media/",
     "images/",
     "snippets/",
@@ -35,7 +35,7 @@
     "extension.css",
     "*.md"
   ],
-  "main": "./dist/extension.js",
+  "main": "./out/extension.js",
   "keywords": [
     "code",
     "management"
@@ -48,8 +48,18 @@
         "category": "codesuite"
       },
       {
+        "command": "codesuite.transformTo2",
+        "title": "Transform to2",
+        "category": "codesuite"
+      },
+      {
         "command": "codesuite.transformToCamelcase",
         "title": "Transform To Camelcase",
+        "category": "codesuite"
+      },
+      {
+        "command": "codesuite.transformToPascalcase",
+        "title": "Transform To Pascalcase",
         "category": "codesuite"
       },
       {
@@ -79,22 +89,28 @@
         "key": "alt+f1",
         "mac": "option+f1",
         "when": "editorTextFocus"
+      },
+      {
+        "command": "codesuite.transformTo2",
+        "key": "alt+f2",
+        "mac": "option+f2",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "codesuite.lookupSymbols",
+        "key": "alt+f3",
+        "mac": "option+f3",
+        "when": "editorTextFocus"
       }
     ]
   },
   "scripts": {
-    "vscode:prepublish": "npm run package",
-    "webpack": "webpack",
-    "compile": "webpack",
-    "watch": "webpack --watch",
-    "compile0": "tsc -p ./",
-    "watch0": "tsc -watch -p ./",
-    "package": "webpack --mode production --devtool hidden-source-map",
-    "compile-tests": "tsc -p . --outDir out",
-    "watch-tests": "tsc -p . -w --outDir out",
-    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./dist/test/runTest.js"
+    "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
@@ -108,11 +124,7 @@
     "eslint": "^8.39.0",
     "glob": "^8.1.0",
     "mocha": "^10.2.0",
-    "ts-loader": "^9.4.3",
-    "typescript": "^5.0.4",
-    "webpack": "^5.88.0",
-    "webpack-cli": "^5.0.2",
-    "webpack-dev-server": "^4.15.1"
+    "typescript": "^5.0.4"
   },
   "dependencies": {
     "html-entities": "^2.3.6",

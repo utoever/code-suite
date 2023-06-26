@@ -15,7 +15,7 @@ export function getTransformModel() {
             label: 'CamelCase',
             // cmd: 'editor.action.transformToCamelcase',
             cmd: 'codesuite.transformToCamelcase',
-            description: '',
+            description: 'transformToCamelcase',
             detail: ''
         },
         {
@@ -31,14 +31,45 @@ export function getTransformModel() {
             detail: ''
         },
         {
-            label: 'JavaCase',
+            label: '$(file-binary) InsertCase',
+            cmd: 'codesuite.transformToInsertCase',
+            description: 'transformToInsertCase',
+            detail: 'SQL'
+        },
+        {
+            label: '$(file-code) JavaCase',
             cmd: 'codesuite.transformToJavaCase',
             description: 'transformToJavaCase',
+            detail: 'Java'
+        },
+        {
+            label: '$(file-code) JavaCase_Smart',
+            cmd: 'codesuite.transformToJavaCaseSmart',
+            description: 'transformToJavaCaseSmart',
             detail: 'Java'
         },
     ];
     return models;
 }
+
+export function getTransformModel2() {
+    const models: TransformModel[] = [
+        {
+            label: '$(file-media) EncodeHtml',
+            cmd: 'codesuite.transformToEncodeHtml',
+            description: 'transformToEncodeHtml',
+            detail: 'HTML'
+        },
+        {
+            label: '$(file-media) DecodeHTML',
+            cmd: 'codesuite.transformToDecodeHTML',
+            description: 'transformToDecodeHTML',
+            detail: 'HTML'
+        },
+    ];
+    return models;
+}
+
 
 export interface TransformModelQuickPick<T> extends vscode.QuickPickItem {
     cmd: T
