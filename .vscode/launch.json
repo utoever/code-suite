@@ -2,33 +2,28 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "Run Extension",
-			"type": "extensionHost",
-			"request": "launch",
-			"args": [
-				"--extensionDevelopmentPath=${workspaceFolder}"
-			],
-			"outFiles": [
-				"${workspaceFolder}/dist/**/*.js"
-			],
-			"sourceMaps": true,
-			"smartStep": true,
-			"preLaunchTask": "watch",
-			"internalConsoleOptions": "openOnSessionStart"
-		},
+      "name": "Run Extension",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": ["--extensionDevelopmentPath=${workspaceFolder}"],
+      "outFiles": ["${workspaceFolder}/out/**/*.js"],
+      "sourceMaps": true,
+      "smartStep": true,
+      "preLaunchTask": "${defaultBuildTask}",
+	  "internalConsoleOptions": "openOnSessionStart"
+    },
 		{
 			"name": "Extension Tests",
 			"type": "extensionHost",
 			"request": "launch",
 			"args": [
 				"--extensionDevelopmentPath=${workspaceFolder}",
-				"--extensionTestsPath=${workspaceFolder}/dist/test/suite/index"
+				"--extensionTestsPath=${workspaceFolder}/out/test/suite/index"
 			],
 			"outFiles": [
-				"${workspaceFolder}/dist/**/*.js",
-				"${workspaceFolder}/dist/**/*.js"
+				"${workspaceFolder}/out/test/**/*.js"
 			],
-			"preLaunchTask": "tasks: watch-tests"
+			"preLaunchTask": "${defaultBuildTask}"
 		}
 	]
 }

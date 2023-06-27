@@ -16,6 +16,17 @@ export function getSelectionText() {
     return content;
 }
 
+export function getEditorFilePath() {
+    const activeEditor = vscode.window.activeTextEditor;
+    if (activeEditor) {
+        const document = activeEditor.document;
+        // const filePath = document.uri.fsPath;
+        // console.log('File Path:', filePath);
+        return document.fileName;
+    }
+    return '';
+}
+
 export async function printEditor(output: string) {
     if (!output) {
         return;

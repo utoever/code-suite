@@ -74,3 +74,16 @@ export function getTransformModel2() {
 export interface TransformModelQuickPick<T> extends vscode.QuickPickItem {
     cmd: T
 }
+
+export interface SymbolModelQuickPick<T> extends vscode.QuickPickItem {
+    model?: T
+}
+
+export interface JavaModel {
+    kind: vscode.SymbolKind
+    name: string
+    className?: string
+    location?: vscode.Location | undefined
+    range?: vscode.Range | undefined
+    detail?: string
+}

@@ -1,10 +1,11 @@
 /*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
+*  Copyright (c) Microsoft Corporation. All rights reserved.
+*  Licensed under the MIT License. See License.txt in the project root for license information.
+*--------------------------------------------------------------------------------------------*/
 
 import * as cp from 'child_process';
 import * as path from 'path';
+import * as vscode from 'vscode';
 import { Disposable, QuickPickItem, Uri, window, workspace } from 'vscode';
 
 /**
@@ -49,7 +50,7 @@ export async function pickFile(filePattern: string = '*') {
     try {
         return await new Promise<Uri | undefined>((resolve, reject) => {
             const input = window.createQuickPick<FileItem | MessageItem>();
-            input.placeholder = '검색할 파일명을 입력하세요';
+            input.placeholder = vscode.l10n.t('Search File');
 
             let rgs: cp.ChildProcess[] = [];
             disposables.push(
@@ -71,10 +72,8 @@ export async function pickFile(filePattern: string = '*') {
                                     input.items = [];
                                 }
                                 if (!err) {
-                                    input.items = input.items.concat(
-                                        stdout
-                                            .split('\n').slice(0, 50)
-                                            .map(relative => new FileItem(Uri.file(cwd), Uri.file(path.join(cwd, relative))))
+                                    input.items = input.items.concat(stdout.split('\n').slice(0, 50)
+                                        .map(relative => new FileItem(Uri.file(cwd), Uri.file(path.join(cwd, relative))))
                                     );
                                 }
                                 if (err && !(<any>err).killed && (<any>err).code !== 1 && err.message) {
