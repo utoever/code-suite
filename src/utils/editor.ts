@@ -69,3 +69,7 @@ export async function printEditorReplace(output: string) {
         vscode.window.showErrorMessage("There is not editor");
     }
 }
+
+export function showTextDocument(uri: vscode.Uri, option?: vscode.TextDocumentShowOptions) {
+    return vscode.window.showTextDocument(uri, option);
+}

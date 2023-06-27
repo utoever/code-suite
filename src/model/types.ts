@@ -85,5 +85,5 @@ export interface JavaModel {
     className?: string
     location?: vscode.Location | undefined
     range?: vscode.Range | undefined
-    detail?: string
+    filePath?: string
 }

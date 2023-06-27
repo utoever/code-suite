@@ -59,19 +59,20 @@ export function openTextDocument(filePath: string) {
     });
 }
 
-export function makeSymbol(symbol: vscode.DocumentSymbol | vscode.SymbolInformation, className?: string | undefined, detail?: string | undefined) {
+export function makeSymbol(symbol: vscode.DocumentSymbol | vscode.SymbolInformation, className?: string | undefined, filePath?: string | undefined) {
     return {
         kind: symbol.kind,
         name: symbol.name,
         className: className,
         location: 'location' in symbol ? symbol.location : undefined,
         range: 'range' in symbol ? symbol.range : undefined,
-        detail: detail
+        filePath: filePath
     };
 }
 
 
-export async function lookupMethods(filePath?: string | undefined, subclass?: string) {
+export async function lookupMethods(filePath?: string | undefined, subJavaName?: string) {
+    const subclass = subJavaName && subJavaName.endsWith('.java') ? subJavaName.substring(0, subJavaName.length - 5) : subJavaName;
     const symbols: SymbolModelQuickPick<JavaModel>[] = [];
     try {
         if (!filePath) {
@@ -85,17 +86,18 @@ export async function lookupMethods(filePath?: string | undefined, subclass?: st
             );
             if (results) {
                 const model: SymbolModelQuickPick<JavaModel> = {
-                    label: results[0].name,
+                    label: `$(symbol-namespace) ` + results[0].name,
                     description: subclass ?? '',
-                    model: makeSymbol(results[0])
+                    model: makeSymbol(results[0], subclass, filePath)
                 };
                 symbols.push(model);
 
-                if (results[1] && results[1].kind === vscode.SymbolKind.Class) {
+                if (results[1] && (results[1].kind === vscode.SymbolKind.Class || results[1].kind === vscode.SymbolKind.Interface)) {
                     const model: SymbolModelQuickPick<JavaModel> = {
-                        label: results[1].name,
-                        description: subclass ?? '',
-                        model: makeSymbol(results[1])
+                        label: `$(symbol-class) ` + results[1].name,
+                        description: results[1].name,
+                        detail: subclass ?? '',
+                        model: makeSymbol(results[1], subclass, filePath)
                     };
                     symbols.push(model);
                 }
@@ -104,33 +106,42 @@ export async function lookupMethods(filePath?: string | undefined, subclass?: st
                     (results[1] as vscode.DocumentSymbol).children.forEach((document: any) => {
                         let className: string | undefined;
                         if (document.kind === vscode.SymbolKind.Field) {
-                            const editor = vscode.window.activeTextEditor;
-                            const text = editor?.document.getText(document.range);
-                            className = lookupClassName(document.name, text!);
+                            if (subclass) {
+                                className = subclass;
+                            } else {
+                                const editor = vscode.window.activeTextEditor;
+                                const text = editor?.document.getText(document.range);
+                                className = lookupClassName(document.name, text!);
+                            }
                         }
                         const model: SymbolModelQuickPick<JavaModel> = {
-                            label: document.name,
-                            description: subclass ?? '',
+                            label: document.kind === vscode.SymbolKind.Field ? `$(symbol-field) ` + document.name : `$(symbol-method) ` + document.name,
+                            description: document.name,
                             detail: subclass ?? '',
-                            model: makeSymbol(document, className)
+                            model: makeSymbol(document, className, filePath)
                         };
                         symbols.push(model);
                     });
                 }
 
-                symbols.filter(symbol => symbol.model?.kind === vscode.SymbolKind.Field).map(async (model) => {
+                if (!subclass) {
+                    const javaFileModels = symbols.filter(symbol => symbol.model?.kind === vscode.SymbolKind.Field)
+                        .map(async (model) => {
+                            return await searchRgFiles(model.model?.className + '.java');
+                        })[0];
+
                     symbols.push({
                         label: '',
                         kind: vscode.QuickPickItemKind.Separator
                     });
-
-                    const files = await searchRgFiles(model.model?.className + '.java');
-                    console.log(files);
-                    files.forEach(async file => {
-                        const subSymbols = await lookupMethods(file.fsPath, model.model?.className);
-                        symbols.push(...subSymbols);
-                    });
-                });
+                    if (javaFileModels) {
+                        const models = await javaFileModels;
+                        for (let javaFileModel of models) {
+                            const subSymbols = await lookupMethods(javaFileModel.filePath.fsPath, javaFileModel.className);
+                            symbols.push(...subSymbols);
+                        }
+                    }
+                }
             }
         }
     } catch (error: any) {
@@ -175,7 +186,7 @@ export function getLineText(lineFromPos: vscode.Position, lineToPos: vscode.Posi
 export function lookupPosition(model: JavaModel, fullText: string) {
     const delim = '(';
     let searchText: string;
-    let shiftPos = 0;
+    let shiftPos = 1;
     if (model.name.indexOf(delim) > 0) {
         searchText = model.name.split(delim)[0];
     } else if (model.kind === vscode.SymbolKind.Class) {
@@ -191,8 +202,8 @@ export function lookupPosition(model: JavaModel, fullText: string) {
     for (let i: number = 0; i < lines.length; i++) {
         const pos = lines[i].indexOf(searchText);
         if (pos >= 0) {
-            const start = new vscode.Position(position.line + i, pos + shiftPos);
-            const end = new vscode.Position(position.line + i, pos + searchText.length);
+            const start = new vscode.Position(position.line + i, model.kind === vscode.SymbolKind.Package ? 0 : pos + shiftPos);
+            const end = new vscode.Position(position.line + i, pos + searchText.length + shiftPos);
             selection = new vscode.Selection(start, end);
             break;
         }

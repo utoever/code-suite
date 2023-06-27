@@ -103,8 +103,8 @@
       },
       {
         "command": "codesuite.lookupSymbols",
-        "key": "alt+f3",
-        "mac": "option+f3",
+        "key": "ctrl+r",
+        "mac": "cmd+r",
         "when": "editorTextFocus"
       }
     ]
