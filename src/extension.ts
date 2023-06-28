@@ -48,6 +48,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 			const quickPick = vscode.window.createQuickPick<SymbolModelQuickPick<JavaModel>>();
 			quickPick.items = items;
+			quickPick.placeholder = 'Please select symbol';
 
 			quickPick.onDidChangeActive((selectedItem) => {
 				// quickPick.titleColor = new vscode.ThemeColor('quickInput.foreground');
@@ -85,8 +86,21 @@ export function activate(context: vscode.ExtensionContext) {
 			// 		editor!.selection = selection;
 			// 	}
 			// });
+		}),
+
+		vscode.commands.registerCommand('workbench.action.quickOpen', () => {
+			vscode.commands.executeCommand('workbench.action.quickOpen').then(() => {
+				vscode.commands.registerCommand('$', () => {
+					vscode.commands.executeCommand('codesuite.lookupSymbols');
+				});
+			});
 		})
 	);
+	vscode.languages.registerDocumentSymbolProvider({ scheme: 'file' }, {
+		provideDocumentSymbols(document: vscode.TextDocument, token: vscode.CancellationToken): vscode.ProviderResult<vscode.SymbolInformation[] | vscode.SymbolInformation[]> {
+			return [];
+		}
+	});
 }
 
 export function deactivate() {
